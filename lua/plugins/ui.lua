@@ -56,10 +56,10 @@ return {
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
-    opts = {
-      preset = "classic",
-      win = { border = "single" },
-    },
+    -- opts = {
+    --   preset = "classic",
+    --   win = { border = "single" },
+    -- },
   },
 
   -- Plugin: nvim-docs-view
@@ -94,6 +94,7 @@ return {
             icon = "", -- Set the icon for the mode
           },
         },
+        lualine_z = {},
       },
       extensions = {
         "quickfix",
@@ -133,9 +134,9 @@ return {
             lualine_y = {
               "progress",
             },
-            lualine_z = {
-              "location",
-            },
+            -- lualine_z = {
+            --   "location",
+            -- },
           },
           inactive_sections = {
             lualine_a = {},
@@ -147,7 +148,7 @@ return {
             lualine_y = {
               "progress",
             },
-            lualine_z = {},
+            -- lualine_z = {},
           },
         },
       },
