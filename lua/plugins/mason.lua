@@ -3,8 +3,6 @@
 --   { "williamboman/mason-lspconfig.nvim", version = "1.32.0" },
 -- }
 
--- plugins/mason.lua
--- plugins/mason.lua
 return {
   {
     "williamboman/mason.nvim",

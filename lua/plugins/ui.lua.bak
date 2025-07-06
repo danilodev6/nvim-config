@@ -30,7 +30,7 @@ local function codecompanion_adapter_name()
     return nil
   end
 
-  return " " .. chat.adapter.formatted_name
+  return " " .. chat.adapter.formatted_name
 end
 
 local function codecompanion_current_model_name()
@@ -41,13 +41,6 @@ local function codecompanion_current_model_name()
 
   return chat.settings.model
 end
-
--- Catppuccin-style separators (rounded instead of triangular)
-local separators = {
-  left = "",
-  right = "",
-}
-
 -- This file contains the configuration for various UI-related plugins in Neovim.
 return {
   -- Plugin: folke/todo-comments.nvim
@@ -63,13 +56,10 @@ return {
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
-    opts = {
-      preset = "modern", -- Changed from "classic" to "modern" for Catppuccin style
-      win = {
-        border = "rounded", -- Changed from "single" to "rounded" for softer appearance
-        padding = { 1, 2 }, -- Add some padding
-      },
-    },
+    -- opts = {
+    --   preset = "classic",
+    --   win = { border = "single" },
+    -- },
   },
 
   -- Plugin: nvim-docs-view
@@ -94,34 +84,26 @@ return {
     requires = { "nvim-tree/nvim-web-devicons", opt = true }, -- Optional dependency for icons
     opts = {
       options = {
-        theme = "rose-pine", -- Keep your Rose Pine theme
+        theme = "rose-pine", -- Set the theme for lualine
         icons_enabled = true, -- Enable icons in the statusline
-        component_separators = { left = "│", right = "│" }, -- Catppuccin-style separators
-        section_separators = { left = "", right = "" }, -- Rounded separators instead of triangular
-        globalstatus = true, -- Single statusline for all windows
-        disabled_filetypes = {
-          statusline = { "dashboard", "alpha", "starter" },
-        },
       },
       sections = {
         lualine_a = {
           {
-            "mode",
-            icon = "",
+            "mode", -- Display the current mode
+            icon = "", -- Set the icon for the mode
           },
         },
-        lualine_b = { "branch", "diff", "diagnostics" },
-        lualine_c = { "filename" },
-        lualine_x = { "filetype" },
-        lualine_y = { "progress" },
-        lualine_z = { "location" },
+        lualine_z = {},
       },
       extensions = {
         "quickfix",
         {
           filetypes = { "oil" },
           sections = {
-            lualine_a = { mode },
+            lualine_a = {
+              mode,
+            },
             lualine_b = {
               function()
                 local ok, oil = pcall(require, "oil")
@@ -131,7 +113,7 @@ return {
 
                 ---@diagnostic disable-next-line: param-type-mismatch
                 local path = vim.fn.fnamemodify(oil.get_current_dir(), ":~")
-                return " " .. path .. " %m"
+                return path .. " %m"
               end,
             },
           },
@@ -139,18 +121,34 @@ return {
         {
           filetypes = { "codecompanion" },
           sections = {
-            lualine_a = { mode },
-            lualine_b = { codecompanion_adapter_name },
-            lualine_c = { codecompanion_current_model_name },
+            lualine_a = {
+              mode,
+            },
+            lualine_b = {
+              codecompanion_adapter_name,
+            },
+            lualine_c = {
+              codecompanion_current_model_name,
+            },
             lualine_x = {},
-            lualine_y = { "progress" },
+            lualine_y = {
+              "progress",
+            },
+            -- lualine_z = {
+            --   "location",
+            -- },
           },
           inactive_sections = {
             lualine_a = {},
-            lualine_b = { codecompanion_adapter_name },
+            lualine_b = {
+              codecompanion_adapter_name,
+            },
             lualine_c = {},
             lualine_x = {},
-            lualine_y = { "progress" },
+            lualine_y = {
+              "progress",
+            },
+            -- lualine_z = {},
           },
         },
       },
@@ -166,27 +164,18 @@ return {
     priority = 1200, -- Set the priority for loading this plugin
     config = function()
       require("incline").setup({
-        window = {
-          margin = { vertical = 0, horizontal = 1 },
-          padding = 1, -- Simplified padding for Catppuccin style
-        },
+        window = { margin = { vertical = 0, horizontal = 1 } }, -- Set the window margin
         hide = {
           cursorline = true, -- Hide the incline window when the cursorline is active
         },
         render = function(props)
           local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t") -- Get the filename
-          local modified_icon = ""
           if vim.bo[props.buf].modified then
-            modified_icon = " ●" -- More subtle modified indicator
+            filename = "[+] " .. filename -- Indicate if the file is modified
           end
 
           local icon, color = require("nvim-web-devicons").get_icon_color(filename) -- Get the icon and color for the file
-          return {
-            { icon, guifg = color },
-            { " " },
-            { filename },
-            { modified_icon, guifg = "#f38ba8" }, -- Catppuccin-style accent color
-          }
+          return { { icon, guifg = color }, { " " }, { filename } } -- Return the rendered content
         end,
       })
     end,
@@ -199,20 +188,6 @@ return {
     "folke/zen-mode.nvim",
     cmd = "ZenMode", -- Command to toggle Zen Mode
     opts = {
-      window = {
-        backdrop = 0.95,
-        width = 0.8,
-        height = 0.9,
-        options = {
-          signcolumn = "no",
-          number = false,
-          relativenumber = false,
-          cursorline = false,
-          cursorcolumn = false,
-          foldcolumn = "0",
-          list = false,
-        },
-      },
       plugins = {
         gitsigns = true, -- Enable gitsigns integration
         tmux = true, -- Enable tmux integration
@@ -220,7 +195,7 @@ return {
         twilight = { enabled = true }, -- Enable twilight integration
       },
     },
-    keys = { { "<leader>z", "<cmd>ZenMode<cr>", desc = "󰄄 Zen Mode" } }, -- Updated icon
+    keys = { { "<leader>z", "<cmd>ZenMode<cr>", desc = "Zen Mode" } }, -- Keybinding to toggle Zen Mode
   },
 
   -- Plugin: snacks.nvim
@@ -229,10 +204,7 @@ return {
   {
     "folke/snacks.nvim",
     opts = {
-      notifier = {
-        style = "modern", -- Modern notification style
-        margin = { top = 1, right = 1, bottom = 1 },
-      },
+      notifier = {},
       image = {},
       picker = {
         matcher = {
@@ -244,11 +216,11 @@ return {
         sources = {
           explorer = {
             matcher = {
-              fuzzy = true,
-              smartcase = true,
-              ignorecase = true,
-              filename_bonus = true,
-              sort_empty = false,
+              fuzzy = true, -- Enables fuzzy matching, so you can be a bit imprecise with your search terms
+              smartcase = true, -- If your search term has uppercase letters, the search becomes case-sensitive
+              ignorecase = true, -- Ignores case when searching, unless smartcase is triggered
+              filename_bonus = true, -- Gives a higher priority to matches in filenames
+              sort_empty = false, -- If no matches are found, it won't sort the results
             },
           },
         },
@@ -256,37 +228,32 @@ return {
       dashboard = {
         sections = {
           { section = "header" },
-          { icon = "󰈚", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
-          { icon = "󰈙", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
-          { icon = "󰉋", title = "Projects", section = "projects", indent = 2, padding = 1 },
+          { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
+          { icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
+          { icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
           { section = "startup" },
         },
         preset = {
           header = [[
-    ██████╗  █████╗ ███╗   ██╗██╗██╗      ██████╗ 
-    ██╔══██╗██╔══██╗████╗  ██║██║██║     ██╔═══██╗
-    ██║  ██║███████║██╔██╗ ██║██║██║     ██║   ██║
-    ██║  ██║██╔══██║██║╚██╗██║██║██║     ██║   ██║
-    ██████╔╝██║  ██║██║ ╚████║██║███████╗╚██████╔╝
-    ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚══════╝ ╚═════╝ 
+██████╗  █████╗ ███╗   ██╗██╗██╗      ██████╗ 
+██╔══██╗██╔══██╗████╗  ██║██║██║     ██╔═══██╗
+██║  ██║███████║██╔██╗ ██║██║██║     ██║   ██║
+██║  ██║██╔══██║██║╚██╗██║██║██║     ██║   ██║
+██████╔╝██║  ██║██║ ╚████║██║███████╗╚██████╔╝
+╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚══════╝ ╚═════╝ 
 ]],
-          -- Updated icons to match Catppuccin style
+          -- stylua: ignore
           ---@type snacks.dashboard.Item[]
           keys = {
-            { icon = "󰈞", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
-            { icon = "󰎔", key = "n", desc = "New File", action = ":ene | startinsert" },
-            { icon = "󰺮", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
-            { icon = "󰋚", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
-            {
-              icon = "󰒓",
-              key = "c",
-              desc = "Config",
-              action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
-            },
-            { icon = "󰁯", key = "s", desc = "Restore Session", section = "session" },
-            { icon = "󰒲", key = "x", desc = "Lazy Extras", action = ":LazyExtras" },
-            { icon = "󰒲", key = "l", desc = "Lazy", action = ":Lazy" },
-            { icon = "󰗼", key = "q", desc = "Quit", action = ":qa" },
+            { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
+            { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+            { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
+            { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
+            { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})" },
+            { icon = " ", key = "s", desc = "Restore Session", section = "session" },
+            { icon = " ", key = "x", desc = "Lazy Extras", action = ":LazyExtras" },
+            { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy" },
+            { icon = " ", key = "q", desc = "Quit", action = ":qa" },
           },
         },
       },
