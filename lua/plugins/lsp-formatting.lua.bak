@@ -1,0 +1,290 @@
+-- plugins/lsp-formatting.lua
+
+return {
+  -- Mason - Install only what we need
+  {
+    "williamboman/mason.nvim",
+    opts = function(_, opts)
+      opts.ensure_installed = opts.ensure_installed or {}
+      vim.list_extend(opts.ensure_installed, {
+        -- Language servers
+        "nomicfoundation-solidity-language-server", -- Solidity LSP
+        "vtsls", -- Use vtsls instead of ts_ls for better performance
+
+        -- Formatters
+        "prettier",
+        "prettierd",
+        "biome",
+
+        -- Linters
+        "eslint_d",
+        "solhint",
+      })
+    end,
+  },
+
+  -- LSP Config - Clean setup
+  {
+    "neovim/nvim-lspconfig",
+    opts = function(_, opts)
+      opts.servers = opts.servers or {}
+
+      -- DISABLE conflicting servers
+      opts.servers.solc = false
+      opts.servers.solidity = false
+      opts.servers.solidity_ls = false
+      opts.servers.ts_ls = false -- Disable this to avoid conflicts with vtsls
+
+      -- Only use Nomicfoundation for Solidity
+      opts.servers.solidity_ls_nomicfoundation = {
+        filetypes = { "solidity" },
+        root_dir = function(fname)
+          local util = require("lspconfig.util")
+          return util.root_pattern(
+            "hardhat.config.js",
+            "hardhat.config.ts",
+            "foundry.toml",
+            "truffle-config.js",
+            "package.json",
+            ".git"
+          )(fname)
+        end,
+        settings = {
+          solidity = {
+            includePath = "",
+            remapping = {},
+          },
+        },
+        on_attach = function(client, _)
+          client.server_capabilities.semanticTokensProvider = nil
+        end,
+      }
+
+      -- Use vtsls for better TypeScript support
+      opts.servers.vtsls = {
+        filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact" },
+        settings = {
+          typescript = {
+            preferences = {
+              includePackageJsonAutoImports = "off",
+            },
+          },
+        },
+      }
+
+      return opts
+    end,
+  },
+
+  -- Formatting with Conform (LazyVim's preferred way)
+  {
+    "stevearc/conform.nvim",
+    opts = function(_, opts)
+      opts.formatters_by_ft = opts.formatters_by_ft or {}
+
+      -- React/JS/TS formatting - Use prettierd first for speed
+      opts.formatters_by_ft.javascript = { "biome" }
+      opts.formatters_by_ft.typescript = { "biome" }
+      opts.formatters_by_ft.javascriptreact = { "biome" }
+      opts.formatters_by_ft.typescriptreact = { "biome" }
+      opts.formatters_by_ft.json = { "biome" }
+      opts.formatters_by_ft.markdown = { "biome" }
+
+      -- Solidity formatting - Use prettier without plugin for now
+      -- In opts.formatters_by_ft, change:
+      opts.formatters_by_ft.solidity = { "prettier" }
+
+      -- Configure formatters
+      opts.formatters = opts.formatters or {}
+
+      -- Configure prettier
+      opts.formatters.prettier = {
+        prepend_args = function(self, ctx)
+          local args = {}
+
+          -- Only add Solidity plugin if:
+          -- 1. It's a .sol file
+          -- 2. The plugin is available
+          if ctx.filename and ctx.filename:match("%.sol$") then
+            -- Check if prettier-plugin-solidity is installed
+            local has_plugin = vim.fn.system("npm list -g prettier-plugin-solidity"):find("prettier-plugin-solidity")
+              ~= nil
+            if has_plugin then
+              table.insert(args, "--plugin=prettier-plugin-solidity")
+            end
+          end
+
+          return args
+        end,
+        timeout_ms = 5000,
+      }
+
+      return opts
+    end,
+  },
+
+  -- Linting - Only for projects with configs
+  {
+    "mfussenegger/nvim-lint",
+    opts = function(_, opts)
+      opts.linters_by_ft = opts.linters_by_ft or {}
+
+      -- Solidity linting
+      opts.linters_by_ft.solidity = { "solhint" }
+
+      -- JS/TS linting - only add if ESLint config exists
+      local function has_eslint_config()
+        local config_files = {
+          ".eslintrc.js",
+          ".eslintrc.json",
+          ".eslintrc.yaml",
+          ".eslintrc.yml",
+          ".eslintrc",
+          "eslint.config.js",
+          "eslint.config.mjs",
+        }
+        for _, config in ipairs(config_files) do
+          if vim.fn.filereadable(config) == 1 then
+            return true
+          end
+        end
+        -- Also check package.json for eslintConfig
+        local package_json = vim.fn.readfile("package.json")
+        if package_json and #package_json > 0 then
+          local content = table.concat(package_json, "\n")
+          return content:find('"eslintConfig"') ~= nil
+        end
+        return false
+      end
+
+      -- Only enable ESLint if config exists
+      if has_eslint_config() then
+        opts.linters_by_ft.javascript = { "eslint_d" }
+        opts.linters_by_ft.typescript = { "eslint_d" }
+        opts.linters_by_ft.javascriptreact = { "eslint_d" }
+        opts.linters_by_ft.typescriptreact = { "eslint_d" }
+      else
+        opts.linters_by_ft.javascript = { "biomejs" }
+        opts.linters_by_ft.typescript = { "biomejs" }
+        opts.linters_by_ft.javascriptreact = { "biomejs" }
+        opts.linters_by_ft.typescriptreact = { "biomejs" }
+      end
+
+      opts.linters = opts.linters or {}
+      opts.linters.biomejs = {
+        cmd = "biome",
+        stdin = true,
+        args = { "lint", "--formatter", "json", "--stdin-file-path", "$FILENAME" },
+        stream = "stdout",
+        parser = require("lint.parser").from_errorformat("%f:%l:%c %t%n %m", {
+          source = "biome",
+          severity = {
+            E = vim.diagnostic.severity.ERROR,
+            W = vim.diagnostic.severity.WARN,
+            I = vim.diagnostic.severity.INFO,
+          },
+        }),
+      }
+
+      return opts
+    end,
+  },
+}
+
+-- -- plugins/lsp-formatting.lua
+-- -- Consolidated LSP and formatting configuration for LazyVim
+--
+-- return {
+--   -- Mason setup
+--   {
+--     "williamboman/mason.nvim",
+--     opts = function(_, opts)
+--       opts.ensure_installed = opts.ensure_installed or {}
+--       vim.list_extend(opts.ensure_installed, {
+--         -- Language servers
+--         "solidity-ls",
+--
+--         -- Formatters
+--         "prettier",
+--         "prettierd",
+--
+--         -- Linters
+--         "eslint_d",
+--         "solhint",
+--       })
+--     end,
+--   },
+--
+--   -- LSP Config
+--   {
+--     "neovim/nvim-lspconfig",
+--     opts = function(_, opts)
+--       -- Extend servers
+--       opts.servers = opts.servers or {}
+--
+--       -- Solidity Language Server
+--       opts.servers.solidity_ls = {
+--         filetypes = { "solidity" },
+--         root_dir = function(fname)
+--           local util = require("lspconfig.util")
+--           return util.root_pattern(
+--             "hardhat.config.js",
+--             "hardhat.config.ts",
+--             "foundry.toml",
+--             "truffle-config.js",
+--             "package.json",
+--             ".git"
+--           )(fname)
+--         end,
+--       }
+--
+--       return opts
+--     end,
+--   },
+--
+--   -- Conform.nvim for formatting (LazyVim's preferred formatter)
+--   {
+--     "stevearc/conform.nvim",
+--     opts = function(_, opts)
+--       opts.formatters_by_ft = opts.formatters_by_ft or {}
+--
+--       -- Add your custom formatters
+--       opts.formatters_by_ft.solidity = { "prettier" }
+--       opts.formatters_by_ft.javascript = { "prettierd", "prettier" }
+--       opts.formatters_by_ft.typescript = { "prettierd", "prettier" }
+--       opts.formatters_by_ft.json = { "prettierd", "prettier" }
+--
+--       -- Configure prettier for Solidity
+--       opts.formatters = opts.formatters or {}
+--       opts.formatters.prettier = {
+--         prepend_args = function(self, ctx)
+--           local args = {}
+--           -- Add Solidity plugin if it's a .sol file
+--           if ctx.filename and ctx.filename:match("%.sol$") then
+--             table.insert(args, "--plugin=prettier-plugin-solidity")
+--           end
+--           return args
+--         end,
+--       }
+--
+--       return opts
+--     end,
+--   },
+--
+--   -- Lint configuration
+--   {
+--     "mfussenegger/nvim-lint",
+--     opts = function(_, opts)
+--       opts.linters_by_ft = opts.linters_by_ft or {}
+--
+--       -- Add your linters
+--       opts.linters_by_ft.solidity = { "solhint" }
+--       opts.linters_by_ft.javascript = { "eslint_d" }
+--       opts.linters_by_ft.typescript = { "eslint_d" }
+--       opts.linters_by_ft.javascriptreact = { "eslint_d" }
+--       opts.linters_by_ft.typescriptreact = { "eslint_d" }
+--
+--       return opts
+--     end,
+--   },
+-- }

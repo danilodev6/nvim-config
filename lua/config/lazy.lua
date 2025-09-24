@@ -50,7 +50,7 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.formatting.prettier" },
 
     -- Linting plugins
-    { import = "lazyvim.plugins.extras.linting.eslint" },
+    -- { import = "lazyvim.plugins.extras.linting.eslint" },
 
     -- Language support plugins
     { import = "lazyvim.plugins.extras.lang.json" },
@@ -103,3 +103,6 @@ require("lazy").setup({
     },
   },
 })
+
+-- Custom plugin: File creator for web3 projects and react/ts projects
+require("utils.config_files_creator").setup()

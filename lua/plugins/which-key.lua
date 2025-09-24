@@ -18,18 +18,20 @@ return {
     preset = "helix", -- For newer versions
   },
 
-  keys = {
-    {
-      -- Keybinding to show which-key popup
-      "<leader>?",
-      function()
-        require("which-key").show({ global = false }) -- Show the which-key popup for local keybindings
-      end,
-    },
-    {
-      -- Define a group for Obsidian-related commands
-      "<leader>o",
-      group = "Obsidian",
-    },
-  },
+  config = function(_, opts)
+    local wk = require("which-key")
+    wk.setup(opts)
+
+    -- Define groups that should be available immediately
+    wk.add({
+      {
+        "<leader>?",
+        function()
+          wk.show({ global = false })
+        end,
+        desc = "Buffer Local Keymaps (which-key)",
+      },
+      { "<leader>O", group = "Obsidian" },
+    })
+  end,
 }

@@ -37,9 +37,9 @@ return {
       name = "catppuccin",
       priority = 1000,
       opts = {
-        flavour = "mocha", -- latte, frappe, macchiato, mocha
+        flavour = "mocha",             -- latte, frappe, macchiato, mocha
         transparent_background = true, -- disables setting the background color.
-        term_colors = true, -- sets terminal colors (e.g. `g:terminal_color_0`)
+        term_colors = true,            -- sets terminal colors (e.g. `g:terminal_color_0`)
       },
     },
     {
@@ -47,7 +47,7 @@ return {
       name = "rose-pine",
       config = function()
         require("rose-pine").setup({
-          variant = "moon", -- auto, main, moon, or dawn
+          variant = "moon",      -- auto, main, moon, or dawn
           dark_variant = "moon", -- main, moon, or dawn
           dim_inactive_windows = false,
           extend_background_behind_borders = true,
@@ -55,7 +55,7 @@ return {
           enable = {
             terminal = true,
             legacy_highlights = true, -- Improve compatibility for previous versions of Neovim
-            migrations = true, -- Handle deprecated options automatically
+            migrations = true,        -- Handle deprecated options automatically
           },
 
           styles = {
@@ -97,15 +97,33 @@ return {
 
           palette = {
             -- Override the builtin palette per variant
-            -- moon = {
-            --     base = '#18191a',
-            --     overlay = '#363738',
-            -- },
+            moon = { --     base = '#18191a',
+              overlay = "#363738",
+              sky = "#7da6ff",
+              lightsky = "#c4fffc",
+              white = "#ffffff",
+              purple = "#eb6f92",
+              greenblue = "#31748f",
+              teagreen = "#CDEAC0",
+              tags = "#C8C8CC",
+              rgreen = "#0F5152"
+            },
           },
 
           -- NOTE: Highlight groups are extended (merged) by default. Disable this
           -- per group via `inherit = false`
           highlight_groups = {
+            ["solContract"] = { fg = "gold", bold = true },
+            ["solBuiltinType"] = { fg = "iris" },
+            ["typescriptVariable"] = { fg = "sky" },
+            ["javaScriptReserved"] = { fg = "sky" },
+            ["@lsp.type.property.typescriptreact"] = { fg = "white" },
+            ["typescriptImport"] = { fg = "rgreen" },
+            ["tsxTag"] = { fg = "tags" },
+            ["tsxIntrinsicTagName"] = { fg = "purple" },
+            ["tsxAttrib"] = { fg = "greenblue" },
+            ["tsxTagName"] = { fg = "teagreen" }
+
             -- Comment = { fg = "foam" },
             -- StatusLine = { fg = "love", bg = "love", blend = 15 },
             -- VertSplit = { fg = "muted", bg = "muted" },
@@ -127,6 +145,11 @@ return {
       end,
     },
     {
+      "Gentleman-Programming/gentleman-kanagawa-blur",
+      name = "gentleman-kanagawa-blur",
+      priority = 1000,
+    },
+    {
       "Alan-TheGentleman/oldworld.nvim",
       lazy = false,
       priority = 1000,
@@ -135,20 +158,21 @@ return {
     {
       "rebelot/kanagawa.nvim",
       priority = 1000,
+      name = "kanagawa",
       lazy = true,
       config = function()
         require("kanagawa").setup({
-          compile = false, -- enable compiling the colorscheme
+          compile = false,  -- enable compiling the colorscheme
           undercurl = true, -- enable undercurls
           commentStyle = { italic = true },
           functionStyle = {},
           keywordStyle = { italic = true },
           statementStyle = { bold = true },
           typeStyle = {},
-          transparent = true, -- do not set background color
-          dimInactive = false, -- dim inactive window `:h hl-NormalNC`
+          transparent = true,    -- do not set background color
+          dimInactive = false,   -- dim inactive window `:h hl-NormalNC`
           terminalColors = true, -- define vim.g.terminal_color_{0,17}
-          colors = { -- add/modify theme and palette colors
+          colors = {             -- add/modify theme and palette colors
             palette = {},
             theme = {
               wave = {},
@@ -156,9 +180,9 @@ return {
               dragon = {},
               all = {
                 ui = {
-                  bg_gutter = "none", -- set bg color for normal background
+                  bg_gutter = "none",  -- set bg color for normal background
                   bg_sidebar = "none", -- set bg color for sidebar like nvim-tree
-                  bg_float = "none", -- set bg color for floating windows
+                  bg_float = "none",   -- set bg color for floating windows
                 },
               },
             },
@@ -174,21 +198,28 @@ return {
               LspInfoBorder = { bg = "none" },
             }
           end,
-          theme = "wave", -- Load "wave" theme
-          background = { -- map the value of 'background' option to a theme
+          theme = "wave",  -- Load "wave" theme
+          background = {   -- map the value of 'background' option to a theme
             dark = "wave", -- try "dragon" !
             light = "lotus",
           },
         })
       end,
     },
+    -- {
+    --   -- LazyVim configuration
+    --   "LazyVim/LazyVim",
+    --   opts = {
+    --     -- Set the default color scheme
+    --     colorscheme = "rose-pine",
+    --   },
+    -- },
+
     {
-      -- LazyVim configuration
       "LazyVim/LazyVim",
       opts = {
-        -- Set the default color scheme
-        colorscheme = "rose-pine",
+        colorscheme = "gentleman-kanagawa-blur",
       },
     },
-  },
+  }
 }

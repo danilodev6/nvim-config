@@ -42,12 +42,6 @@ local function codecompanion_current_model_name()
   return chat.settings.model
 end
 
--- Catppuccin-style separators (rounded instead of triangular)
-local separators = {
-  left = "",
-  right = "",
-}
-
 -- This file contains the configuration for various UI-related plugins in Neovim.
 return {
   -- Plugin: folke/todo-comments.nvim
@@ -64,10 +58,9 @@ return {
     "folke/which-key.nvim",
     event = "VeryLazy",
     opts = {
-      preset = "modern", -- Changed from "classic" to "modern" for Catppuccin style
+      preset = "modern",
       win = {
-        border = "rounded", -- Changed from "single" to "rounded" for softer appearance
-        padding = { 1, 2 }, -- Add some padding
+        border = "rounded", padding = { 1, 2 },
       },
     },
   },
@@ -77,11 +70,11 @@ return {
   -- Description: A Neovim plugin for viewing documentation.
   {
     "amrbashir/nvim-docs-view",
-    lazy = true, -- Load this plugin lazily
+    lazy = true,            -- Load this plugin lazily
     cmd = "DocsViewToggle", -- Command to toggle the documentation view
     opts = {
-      position = "right", -- Position the documentation view on the right
-      width = 60, -- Set the width of the documentation view
+      position = "right",   -- Position the documentation view on the right
+      width = 60,           -- Set the width of the documentation view
     },
   },
 
@@ -90,15 +83,15 @@ return {
   -- Description: A blazing fast and easy to configure Neovim statusline plugin.
   {
     "nvim-lualine/lualine.nvim",
-    event = "VeryLazy", -- Load this plugin on the 'VeryLazy' event
+    event = "VeryLazy",                                       -- Load this plugin on the 'VeryLazy' event
     requires = { "nvim-tree/nvim-web-devicons", opt = true }, -- Optional dependency for icons
     opts = {
       options = {
-        theme = "rose-pine", -- Keep your Rose Pine theme
-        icons_enabled = true, -- Enable icons in the statusline
-        component_separators = { left = "│", right = "│" }, -- Catppuccin-style separators
-        section_separators = { left = "", right = "" }, -- Rounded separators instead of triangular
-        globalstatus = true, -- Single statusline for all windows
+        theme = "seoul256",
+        icons_enabled = true,
+        component_separators = { left = "│", right = "│" },
+        section_separators = { left = "", right = "" },
+        globalstatus = true,
         disabled_filetypes = {
           statusline = { "dashboard", "alpha", "starter" },
         },
@@ -163,12 +156,12 @@ return {
   {
     "b0o/incline.nvim",
     event = "BufReadPre", -- Load this plugin before reading a buffer
-    priority = 1200, -- Set the priority for loading this plugin
+    priority = 1200,      -- Set the priority for loading this plugin
     config = function()
       require("incline").setup({
         window = {
           margin = { vertical = 0, horizontal = 1 },
-          padding = 1, -- Simplified padding for Catppuccin style
+          padding = 1,
         },
         hide = {
           cursorline = true, -- Hide the incline window when the cursorline is active
@@ -182,10 +175,10 @@ return {
 
           local icon, color = require("nvim-web-devicons").get_icon_color(filename) -- Get the icon and color for the file
           return {
-            { icon, guifg = color },
+            { icon,          guifg = color },
             { " " },
             { filename },
-            { modified_icon, guifg = "#f38ba8" }, -- Catppuccin-style accent color
+            { modified_icon, guifg = "#dca561" },
           }
         end,
       })
@@ -214,13 +207,27 @@ return {
         },
       },
       plugins = {
-        gitsigns = true, -- Enable gitsigns integration
-        tmux = true, -- Enable tmux integration
+        gitsigns = true,                          -- Enable gitsigns integration
+        tmux = true,                              -- Enable tmux integration
         kitty = { enabled = false, font = "+2" }, -- Disable kitty integration and set font size
-        twilight = { enabled = true }, -- Enable twilight integration
+        twilight = { enabled = true },            -- Enable twilight integration
       },
     },
     keys = { { "<leader>z", "<cmd>ZenMode<cr>", desc = "󰄄 Zen Mode" } }, -- Updated icon
+  },
+
+  -- Tema Kanagawa
+  {
+    "rebelot/kanagawa.nvim",
+    priority = 1000,
+    config = function()
+      require("kanagawa").setup({
+        compile = false,
+        theme = "wave", -- wave, dragon, lotus
+        background = { dark = "wave", light = "lotus" },
+      })
+      vim.cmd("colorscheme kanagawa")
+    end,
   },
 
   -- Plugin: snacks.nvim
@@ -263,14 +270,19 @@ return {
         },
         preset = {
           header = [[
-    ██████╗  █████╗ ███╗   ██╗██╗██╗      ██████╗ 
-    ██╔══██╗██╔══██╗████╗  ██║██║██║     ██╔═══██╗
-    ██║  ██║███████║██╔██╗ ██║██║██║     ██║   ██║
-    ██║  ██║██╔══██║██║╚██╗██║██║██║     ██║   ██║
-    ██████╔╝██║  ██║██║ ╚████║██║███████╗╚██████╔╝
-    ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚══════╝ ╚═════╝ 
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣤⣤⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣬⣿⡿⠿⢿⣶⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡿⠁⠀⠉⠙⠻⠿⣶⣦⣀⣠⣤⣤⣤⣤⣤⣤⣶⠿⠟⠫⠉⠀⠀⢀⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⠀⠀⣀⣠⣤⠤⣤⣤⣀⡒⠀⣀⣤⡤⠶⠶⠤⣄⡀⠤⣀⣸⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢀⣀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⣠⡼⠛⠉⠀⠀⠀⠀⠀⠈⠙⠟⠉⠀⠀⠀⠀⠀⠈⠙⠳⣏⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⣴⣤⣿⣻⣿⣿⣷⣿⣧⠀⠀⠀⠀⠀⢸⣿⣸⠋⠀⠠⠴⠶⠒⠒⠲⠆⠀⠀⠀⠀⠘⠓⠒⠒⠲⠶⠀⠀⠈⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⢴⡿⣿⡿⠋⠉⠩⠙⣿⣿⣄⠀⠀⠀⠀⣼⣿⠇⠀⠀⠀⠀⠀⠀⣠⣿⣄⣀⣀⣀⣀⣀⣴⣄⠀⠀⠀⠀⠀⠀⡇⢻⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠈⣿⡿⠁⠀⠀⠀⠀⠹⣿⣿⣷⣄⠀⢰⣿⣿⠀⠀⠀⠀⠀⢀⣀⣨⣤⣤⠤⠤⠤⠤⠤⣬⣭⣄⣀⣀⠀⢀⡼⠁⠀⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⢠⣿⠁⠀⠀⠀⠀⠀⠀⠹⣿⣿⣿⣷⣼⣿⣿⣠⠴⠖⠚⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠙⠓⠶⢤⣸⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠈⣿⠀⠀⠀⠀⠀⠀⠀⠀⠘⢿⣿⣿⡿⠟⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠛⢿⣦⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠸⣿⢰⠀⠀⠀⠀⠀⠀⠀⣠⣾⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⡿⣿⣷⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⣿⡼⡀⠀⠀⠀⠀⣠⣾⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠈⢿⣻⣿⣷⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⢻⣧⢅⠀⠀⢀⡾⣻⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠇⠀⠘⡇⠹⣇⠙⢿⣦⣀⠀⠀⠀⠀⠀⠀⠀
 ]],
-          -- Updated icons to match Catppuccin style
           ---@type snacks.dashboard.Item[]
           keys = {
             { icon = "󰈞", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
