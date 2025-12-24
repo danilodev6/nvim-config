@@ -42,17 +42,17 @@ return {
       -- },
 
       -- Qwen3 Coder 480B A35B
-      provider = {
-        default_provider = "openrouter",
-        default_model    = "qwen/qwen3-coder:free",
-        openrouter       = {
-          api_key = os.getenv("OPENROUTER_API_KEY"),
-          base_url = "https://openrouter.ai/api/v1",
-          models = {
-            ["qwen/qwen3-coder:free"] = { options = { maxTokens = 2048 } }
-          }
-        }
-      }
+      -- provider = {
+      --   default_provider = "openrouter",
+      --   default_model    = "qwen/qwen3-coder:free",
+      --   openrouter       = {
+      --     api_key = os.getenv("OPENROUTER_API_KEY"),
+      --     base_url = "https://openrouter.ai/api/v1",
+      --     models = {
+      --       ["qwen/qwen3-coder:free"] = { options = { maxTokens = 2048 } }
+      --     }
+      --   }
+      -- }
 
       -- -- Kimi K2 0711 (Alternative if Qwen3 unavailable)
       -- provider = {

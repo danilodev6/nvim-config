@@ -52,6 +52,8 @@ return {
               preferences = {
                 importModuleSpecifier = "relative",
                 includePackageJsonAutoImports = "on",
+                quotePreference = "auto",
+                jsxAttributeCompletionStyle = "auto"
               },
               suggest = {
                 autoImports = true,
