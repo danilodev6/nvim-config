@@ -59,6 +59,8 @@ return {
           vim.keymap.set("n", "<cr>", function()
             return require("obsidian").util.smart_action()
           end, { buffer = bufnr, expr = true, desc = "Obsidian smart action" })
+
+          -- Backlinks
         end
       end,
     })
