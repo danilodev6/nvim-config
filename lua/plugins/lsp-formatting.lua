@@ -138,8 +138,12 @@ return {
             return true
           end
         end
-        local ok, data = pcall(vim.json.decode, table.concat(vim.fn.readfile("package.json"), ""))
-        return ok and data and data.eslintConfig
+        -- Safely check package.json for eslintConfig
+        if vim.fn.filereadable("package.json") == 1 then
+          local ok, data = pcall(vim.json.decode, table.concat(vim.fn.readfile("package.json"), ""))
+          return ok and data and data.eslintConfig
+        end
+        return false
       end
 
       local eslint_patterns = {
