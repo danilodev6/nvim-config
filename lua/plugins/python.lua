@@ -1,4 +1,3 @@
--- In ~/.config/nvim/lua/plugins/python.lua
 return {
   {
     "stevearc/conform.nvim",
@@ -10,17 +9,39 @@ return {
     },
   },
 
-  -- Auto-indent Python files before saving
+  -- Auto-indent + venv picker
   {
     "neovim/nvim-lspconfig",
     opts = function()
-      -- Auto-indent Python on save
+      ------------------------------------------------------------------
+      -- Pick nearest venv on opening a Python file
+      ------------------------------------------------------------------
+      vim.api.nvim_create_autocmd("VimEnter", {
+        pattern = "*.py",
+        callback = function(args)
+          -- 1. obtain a sane root
+          local root = vim.fs.root(args.buf, { "pyproject.toml", "setup.py", "requirements.txt", ".git" })
+              or vim.fn.getcwd()  -- fallback
+
+          -- 2. look for venv
+          for _, name in ipairs({ "venv", ".venv", "env" }) do
+            local py = vim.fs.joinpath(root, name, "bin", "python")
+            if vim.fn.executable(py) == 1 then
+              vim.g.python3_host_prog = py
+              return
+            end
+          end
+        end,
+      })
+
+      ------------------------------------------------------------------
+      -- Auto-indent Python files before saving
+      ------------------------------------------------------------------
       vim.api.nvim_create_autocmd("BufWritePre", {
         pattern = "*.py",
         callback = function()
-          -- Only auto-indent if there are syntax errors
           local line_count = vim.api.nvim_buf_line_count(0)
-          if line_count < 1000 then -- Skip huge files
+          if line_count < 1000 then
             vim.cmd("silent! normal! gg=G``")
           end
         end,

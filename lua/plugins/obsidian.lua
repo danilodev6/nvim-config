@@ -1,66 +1,89 @@
 return {
   "obsidian-nvim/obsidian.nvim",
-  version = "*", -- recommended, use latest release instead of latest commit
+  version = "*",
   lazy = false,
   dependencies = {
-    -- Required.
     "nvim-lua/plenary.nvim",
   },
   opts = {
     workspaces = {
       {
-        name = "DaniloNotes",                                          -- Name of the workspace
-        path = os.getenv("OBSIDIAN_PATH") or "~/Developer/work/notes", -- Path to the notes directory
+        name = "DaniloNotes",
+        path = os.getenv("OBSIDIAN_PATH") or "~/Developer/work/notes",
       },
     },
     completion = {
       blink = true,
     },
     picker = {
-      -- Set your preferred picker. Can be one of 'telescope.nvim', 'fzf-lua', 'mini.pick' or 'snacks.pick'.
       name = "snacks.pick",
     },
 
-    -- Settings for templates
+    -- Templates settings
     templates = {
-      subdir = "templates",        -- Subdirectory for templates
-      date_format = "%Y-%m-%d-%a", -- Date format for templates
-      gtime_format = "%H:%M",      -- Time format for templates
-      tags = "",                   -- Default tags for templates
+      subdir = "templates",
+      date_format = "%Y-%m-%d-%a",
+      time_format = "%H:%M",
+      tags = "",
     },
+
+    -- ⭐ NEW: Control note creation
+    notes_subdir = "recent", -- Optional: put all notes in a subfolder
+
+    -- ⭐ NEW: Use title as filename instead of ID
+    note_id_func = function(title)
+      -- If title is provided, use it as filename (lowercase, spaces to hyphens)
+      if title ~= nil then
+        return title:gsub(" ", "-"):gsub("[^A-Za-z0-9-]", ""):lower()
+      else
+        -- If no title, use timestamp
+        return tostring(os.time())
+      end
+    end,
+
+    -- ⭐ NEW: Disable frontmatter ID (or customize it)
+    disable_frontmatter = false,
+    note_frontmatter_func = function(note)
+      -- Customize frontmatter
+      local out = {
+        id = note.id,
+        aliases = note.aliases,
+        tags = note.tags,
+      }
+
+      -- Add the title if it exists
+      if note.metadata ~= nil and not vim.tbl_isempty(note.metadata) then
+        for k, v in pairs(note.metadata) do
+          out[k] = v
+        end
+      end
+
+      return out
+    end,
   },
 
-  -- Set up keymaps using the config function instead of the deprecated mappings option
   config = function(_, opts)
     require("obsidian").setup(opts)
 
-    -- Set up keymaps for Obsidian files only
     vim.api.nvim_create_autocmd("FileType", {
       pattern = "markdown",
       callback = function()
         local bufnr = vim.api.nvim_get_current_buf()
-
-        -- Check if we're in an Obsidian workspace
         local current_file = vim.fn.expand("%:p")
         local workspace_path = vim.fn.expand(opts.workspaces[1].path)
 
         if current_file:match(vim.pesc(workspace_path)) then
-          -- Overrides the 'gf' mapping to work on markdown/wiki links within your vault
           vim.keymap.set("n", "gf", function()
             return require("obsidian").util.gf_passthrough()
           end, { buffer = bufnr, expr = true, desc = "Obsidian follow link" })
 
-          -- Toggle check-boxes
           vim.keymap.set("n", "<leader>ch", function()
             return require("obsidian").util.toggle_checkbox()
           end, { buffer = bufnr, desc = "Toggle checkbox" })
 
-          -- Smart action depending on context: follow link, show notes with tag, toggle checkbox, or toggle heading fold
           vim.keymap.set("n", "<cr>", function()
             return require("obsidian").util.smart_action()
           end, { buffer = bufnr, expr = true, desc = "Obsidian smart action" })
-
-          -- Backlinks
         end
       end,
     })

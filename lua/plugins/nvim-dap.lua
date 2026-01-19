@@ -10,17 +10,21 @@ return {
     desc = "Debugging support. Requires language specific adapters to be configured. (see lang extras)",
 
     dependencies = {
+      -- IMPORTANT: nvim-nio MUST be listed first
+      "nvim-neotest/nvim-nio",
+
       -- Plugin: nvim-dap-ui
       -- URL: https://github.com/rcarriga/nvim-dap-ui
-      -- Description: A UI for nvim-dap.
-      "rcarriga/nvim-dap-ui",
+      {
+        "rcarriga/nvim-dap-ui",
+        dependencies = { "nvim-neotest/nvim-nio" },
+      },
 
       -- Plugin: nvim-dap-virtual-text
       -- URL: https://github.com/theHamsta/nvim-dap-virtual-text
-      -- Description: Virtual text for the debugger.
       {
         "theHamsta/nvim-dap-virtual-text",
-        opts = {}, -- Default options
+        opts = {},
       },
     },
 
@@ -150,6 +154,21 @@ return {
 
     config = function()
       local dap = require("dap")
+      local dapui = require("dapui")
+
+      -- Setup dapui
+      dapui.setup()
+
+      -- Auto-open/close UI when debugging
+      dap.listeners.after.event_initialized["dapui_config"] = function()
+        dapui.open()
+      end
+      dap.listeners.before.event_terminated["dapui_config"] = function()
+        dapui.close()
+      end
+      dap.listeners.before.event_exited["dapui_config"] = function()
+        dapui.close()
+      end
 
       -- Load mason-nvim-dap if available
       if LazyVim.has("mason-nvim-dap.nvim") then
@@ -197,8 +216,6 @@ return {
             end
           end
           env_file:close()
-        else
-          print("Error: .env file not found in " .. env_file_path)
         end
         return variables
       end
@@ -207,6 +224,37 @@ return {
       for _, config in pairs(dap.configurations.go or {}) do
         config.env = load_env_variables
       end
+
+      --------------------------------------------------
+      -- PYTHON (debugpy)
+      --------------------------------------------------
+      local venv_python = vim.g.python3_host_prog
+          or (vim.fn.exepath("python3") ~= "" and vim.fn.exepath("python3"))
+          or "python"
+
+      dap.adapters.python = {
+        type    = "executable",
+        command = venv_python,
+        args    = { "-m", "debugpy.adapter" },
+      }
+
+      dap.configurations.python = {
+        {
+          type = "python",
+          request = "launch",
+          name = "Run current file",
+          program = "${file}",
+          pythonPath = function()
+            -- find nearest venv (same logic as LSP)
+            for _, name in ipairs({ "venv", ".venv", "env" }) do
+              local py = vim.fn.getcwd() .. "/" .. name .. "/bin/python"
+              if vim.fn.filereadable(py) == 1 then return py end
+            end
+            -- fallback
+            return vim.g.python3_host_prog or (vim.fn.exepath("python3") or vim.fn.exepath("python"))
+          end,
+        },
+      }
     end,
   },
 }
