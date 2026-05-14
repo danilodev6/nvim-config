@@ -11,7 +11,8 @@ local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   -- Bootstrap lazy.nvim by cloning the repository
   -- stylua: ignore
-  vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable", lazypath })
+  vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable",
+    lazypath })
 end
 
 -- Prepend the lazy.nvim path to the runtime path
@@ -20,7 +21,7 @@ vim.opt.rtp:prepend(vim.env.LAZY or lazypath)
 -- Fix copy and paste in WSL (Windows Subsystem for Linux)
 if vim.fn.has("wsl") == 1 then
   vim.g.clipboard = {
-    name = "win32yank", -- Use win32yank for clipboard operations
+    name = "win32yank",                  -- Use win32yank for clipboard operations
     copy = {
       ["+"] = "win32yank.exe -i --crlf", -- Command to copy to the system clipboard
       ["*"] = "win32yank.exe -i --crlf", -- Command to copy to the primary clipboard
@@ -29,7 +30,7 @@ if vim.fn.has("wsl") == 1 then
       ["+"] = "win32yank.exe -o --lf", -- Command to paste from the system clipboard
       ["*"] = "win32yank.exe -o --lf", -- Command to paste from the primary clipboard
     },
-    cache_enabled = false, -- Disable clipboard caching
+    cache_enabled = false,             -- Disable clipboard caching
   }
 end
 
@@ -37,7 +38,7 @@ end
 require("lazy").setup({
   spec = {
     -- Add LazyVim and import its plugins
-    { "LazyVim/LazyVim", import = "lazyvim.plugins" },
+    { "LazyVim/LazyVim",                                       import = "lazyvim.plugins" },
     -- Import any extra modules here
     -- Editor plugins
     { import = "lazyvim.plugins.extras.editor.harpoon2" },
@@ -46,7 +47,7 @@ require("lazy").setup({
     -- { import = "lazyvim.plugins.extras.editor.snacks_picker" },
 
     -- Formatting plugins
-    { import = "lazyvim.plugins.extras.formatting.biome" },
+    { import = "lazyvim.plugins.extras.lang.typescript.biome" },
     { import = "lazyvim.plugins.extras.formatting.prettier" },
 
     -- Linting plugins
@@ -86,7 +87,7 @@ require("lazy").setup({
     -- version = "*", -- Try installing the latest stable version for plugins that support semver
   },
   install = { colorscheme = { "tokyonight", "habamax" } }, -- Specify colorschemes to install
-  checker = { enabled = true }, -- Automatically check for plugin updates
+  checker = { enabled = true },                            -- Automatically check for plugin updates
   performance = {
     rtp = {
       -- Disable some runtime path plugins to improve performance

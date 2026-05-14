@@ -26,16 +26,17 @@ vim.keymap.set("n", "<C-k>", nvim_tmux_nav.NvimTmuxNavigateUp)          -- Navig
 vim.keymap.set("n", "<C-l>", nvim_tmux_nav.NvimTmuxNavigateRight)       -- Navigate to the right pane
 vim.keymap.set("n", "<C-\\>", nvim_tmux_nav.NvimTmuxNavigateLastActive) -- Navigate to the last active pane
 vim.keymap.set("n", "<C-Space>", nvim_tmux_nav.NvimTmuxNavigateNext)    -- Navigate to the next pane
+vim.keymap.set("n", "<leader>xd", vim.diagnostic.open_float, { desc = "Show line diagnostic" })
 
 ----- OBSIDIAN -----
-vim.keymap.set("n", "<leader>Oc", "<cmd>ObsidianCheck<CR>", { desc = "Obsidian Check Checkbox" })
-vim.keymap.set("n", "<leader>Ot", "<cmd>ObsidianTemplate<CR>", { desc = "Insert Obsidian Template" })
-vim.keymap.set("n", "<leader>Oo", "<cmd>ObsidianOpen<CR>", { desc = "Open in Obsidian App" })
-vim.keymap.set("n", "<leader>Ob", "<cmd>ObsidianBacklinks<CR>", { desc = "Show ObsidianBacklinks" })
-vim.keymap.set("n", "<leader>Ol", "<cmd>ObsidianLinks<CR>", { desc = "Show ObsidianLinks" })
-vim.keymap.set("n", "<leader>On", "<cmd>ObsidianNew<CR>", { desc = "New note" })
-vim.keymap.set("n", "<leader>Os", "<cmd>ObsidianSearch<CR>", { desc = "Search Obsidian" })
-vim.keymap.set("n", "<leader>Oq", "<cmd>ObsidianQuickSwitch<CR>", { desc = "Quick Switch" })
+vim.keymap.set("n", "<leader>Oc", "<cmd>Obsidian check<CR>", { desc = "Obsidian Check Checkbox" })
+vim.keymap.set("n", "<leader>Ot", "<cmd>Obsidian template<CR>", { desc = "Insert Obsidian Template" })
+vim.keymap.set("n", "<leader>Oo", "<cmd>Obsidian open<CR>", { desc = "Open in Obsidian App" })
+vim.keymap.set("n", "<leader>Ob", "<cmd>Obsidian backlinks<CR>", { desc = "Show Backlinks" })
+vim.keymap.set("n", "<leader>Ol", "<cmd>Obsidian links<CR>", { desc = "Show Links" })
+vim.keymap.set("n", "<leader>On", "<cmd>Obsidian new<CR>", { desc = "New note" })
+vim.keymap.set("n", "<leader>Os", "<cmd>Obsidian search<CR>", { desc = "Search Obsidian" })
+vim.keymap.set("n", "<leader>Oq", "<cmd>Obsidian quick_switch<CR>", { desc = "Quick Switch" })
 
 ----- OIL -----
 vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
