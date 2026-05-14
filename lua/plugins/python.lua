@@ -12,18 +12,22 @@ return {
   -- Auto-indent + venv picker
   {
     "neovim/nvim-lspconfig",
-    opts = function()
-      ------------------------------------------------------------------
+    opts = function(_, opts) -- add (_, opts) here
+      opts.servers = opts.servers or {}
+      opts.servers.basedpyright = {
+        settings = {
+          basedpyright = {
+            typeCheckingMode = "standard",
+          },
+        },
+      }
+
       -- Pick nearest venv on opening a Python file
-      ------------------------------------------------------------------
       vim.api.nvim_create_autocmd("VimEnter", {
         pattern = "*.py",
         callback = function(args)
-          -- 1. obtain a sane root
           local root = vim.fs.root(args.buf, { "pyproject.toml", "setup.py", "requirements.txt", ".git" })
-              or vim.fn.getcwd()  -- fallback
-
-          -- 2. look for venv
+              or vim.fn.getcwd()
           for _, name in ipairs({ "venv", ".venv", "env" }) do
             local py = vim.fs.joinpath(root, name, "bin", "python")
             if vim.fn.executable(py) == 1 then
@@ -34,9 +38,7 @@ return {
         end,
       })
 
-      ------------------------------------------------------------------
       -- Auto-indent Python files before saving
-      ------------------------------------------------------------------
       vim.api.nvim_create_autocmd("BufWritePre", {
         pattern = "*.py",
         callback = function()

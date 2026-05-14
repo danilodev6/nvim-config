@@ -16,5 +16,14 @@ return {
         ["."] = false,
       },
     }
+    -- Auto-kill copilot server on nvim exit
+    vim.api.nvim_create_autocmd("VimLeavePre", {
+      callback = function()
+        local clients = vim.lsp.get_active_clients({ name = "copilot" })
+        for _, client in ipairs(clients) do
+          client.stop()
+        end
+      end,
+    })
   end,
 }

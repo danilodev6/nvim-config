@@ -254,6 +254,35 @@ return {
             return vim.g.python3_host_prog or (vim.fn.exepath("python3") or vim.fn.exepath("python"))
           end,
         },
+        -- Para FastAPI/uvicorn
+        {
+          type       = "python",
+          request    = "launch",
+          name       = "FastAPI - uvicorn",
+          module     = "uvicorn",
+          args       = {
+            "main:app", -- cambiá main por tu módulo raíz
+            "--reload",
+            "--port", "8000",
+          },
+          pythonPath = function()
+            for _, name in ipairs({ "venv", ".venv", "env" }) do
+              local py = vim.fn.getcwd() .. "/" .. name .. "/bin/python"
+              if vim.fn.filereadable(py) == 1 then return py end
+            end
+            return vim.fn.exepath("python3") or "python"
+          end,
+          env        = load_env_variables, -- ya la tenés definida arriba
+          console    = "integratedTerminal",
+        },
+
+        -- Para attacharte a un proceso ya corriendo
+        {
+          type    = "python",
+          request = "attach",
+          name    = "Attach to running process",
+          connect = { host = "127.0.0.1", port = 5678 },
+        },
       }
     end,
   },

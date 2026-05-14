@@ -41,25 +41,30 @@ return {
       end
     end,
 
-    -- ⭐ NEW: Disable frontmatter ID (or customize it)
-    disable_frontmatter = false,
-    note_frontmatter_func = function(note)
-      -- Customize frontmatter
-      local out = {
-        id = note.id,
-        aliases = note.aliases,
-        tags = note.tags,
-      }
+    -- Frontmatter settings
+    frontmatter = {
+      enabled = true,       -- replaces disable_frontmatter = false
+      func = function(note) -- replaces note_frontmatter_func
+        -- Customize frontmatter
+        local out = {
+          id = note.id,
+          aliases = note.aliases,
+          tags = note.tags,
+        }
 
-      -- Add the title if it exists
-      if note.metadata ~= nil and not vim.tbl_isempty(note.metadata) then
-        for k, v in pairs(note.metadata) do
-          out[k] = v
+        -- Add the title if it exists
+        if note.metadata ~= nil and not vim.tbl_isempty(note.metadata) then
+          for k, v in pairs(note.metadata) do
+            out[k] = v
+          end
         end
-      end
 
-      return out
-    end,
+        return out
+      end,
+    },
+
+    -- Use new-style commands (e.g. `Obsidian backlinks` instead of `ObsidianBacklinks`)
+    legacy_commands = false,
   },
 
   config = function(_, opts)
@@ -73,9 +78,9 @@ return {
         local workspace_path = vim.fn.expand(opts.workspaces[1].path)
 
         if current_file:match(vim.pesc(workspace_path)) then
-          vim.keymap.set("n", "gf", function()
-            return require("obsidian").util.gf_passthrough()
-          end, { buffer = bufnr, expr = true, desc = "Obsidian follow link" })
+          -- vim.keymap.set("n", "gf", function()
+          --   return require("obsidian").util.gf_passthrough()
+          -- end, { buffer = bufnr, expr = true, desc = "Obsidian follow link" })
 
           vim.keymap.set("n", "<leader>ch", function()
             return require("obsidian").util.toggle_checkbox()

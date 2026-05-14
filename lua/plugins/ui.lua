@@ -87,13 +87,47 @@ return {
     requires = { "nvim-tree/nvim-web-devicons", opt = true }, -- Optional dependency for icons
     opts = {
       options = {
-        theme = "seoul256",
+        theme = "gruvbox",
         icons_enabled = true,
         component_separators = { left = "│", right = "│" },
         section_separators = { left = "", right = "" },
         globalstatus = true,
         disabled_filetypes = {
           statusline = { "dashboard", "alpha", "starter" },
+        },
+      },
+      themes = {
+        gruvbox = {
+          normal = {
+            a = { fg = "#282828", bg = "#ebdbb2" },
+            b = { fg = "#ebdbb2", bg = "#3c3836" },
+            c = { fg = "#d5c4a1", bg = "#282828" },
+          },
+          insert = {
+            a = { fg = "#282828", bg = "#fabd2f" },
+            b = { fg = "#282828", bg = "#3c3836" },
+            c = { fg = "#d5c4a1", bg = "#282828" },
+          },
+          visual = {
+            a = { fg = "#282828", bg = "#fabd2f" },
+            b = { fg = "#282828", bg = "#3c3836" },
+            c = { fg = "#d5c4a1", bg = "#282828" },
+          },
+          replace = {
+            a = { fg = "#282828", bg = "#fb4934" },
+            b = { fg = "#282828", bg = "#3c3836" },
+            c = { fg = "#d5c4a1", bg = "#282828" },
+          },
+          command = {
+            a = { fg = "#282828", bg = "#b8bb26" },
+            b = { fg = "#282828", bg = "#3c3836" },
+            c = { fg = "#d5c4a1", bg = "#282828" },
+          },
+          inactive = {
+            a = { fg = "#a89984", bg = "#282828" },
+            b = { fg = "#a89984", bg = "#282828" },
+            c = { fg = "#a89984", bg = "#282828" },
+          },
         },
       },
       sections = {
